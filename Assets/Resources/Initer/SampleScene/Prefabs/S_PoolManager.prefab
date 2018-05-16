@@ -53,10 +53,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _Hash: 3
   _Pool:
-  - _Name: TestObject
+  - _Name: Gems
     _PoolSettings:
-    - _Name: S_PoolObject
-      _PoolObject: {fileID: 114852817472953944, guid: 4fad214c0437a3648946e9fe0e1a76e2,
+    - _Name: Gem
+      _PoolObject: {fileID: 114902706436544076, guid: 757307e895875f246bfce1f1dafbe5b4,
         type: 2}
-      _Count: 10
+      _Count: 15
       _OnScene: []

@@ -70,22 +70,18 @@ public class S_AudioManager : S_IniterObject
     internal static void SetVolumeGlobal(float _value)
     {
         S_PlayerPreference.m_GlobalVolume = _value;
-        SetVolumeMusic(_value);
-        SetVolumeSound(_value);
-        //m_Instance._AM_AudioManager.SetFloat("GlobalVolume", Mathf.Lerp(-80.0f, 0.0f, _value));
+        m_Instance._AM_AudioManager.SetFloat("GlobalVolume", Mathf.Lerp(-80.0f, 0.0f, _value));
     }
 
     internal static void SetVolumeMusic(float _value)
     {
         S_PlayerPreference.m_MusicVolume = _value;
-        //m_Instance._AM_AudioManager.SetFloat("MusicVolume", Mathf.Lerp(-80.0f, 0.0f, _value));
         m_Instance._MusicOutput.volume = _value;
     }
 
     internal static void SetVolumeSound(float _value)
     {
         S_PlayerPreference.m_SoundVolume = _value;
-        //m_Instance._AM_AudioManager.SetFloat("SoundVolume", Mathf.Lerp(-80.0f, 0.0f, _value));
         m_Instance._SoundOutput.volume = _value;
     }
     #endregion SetVolume

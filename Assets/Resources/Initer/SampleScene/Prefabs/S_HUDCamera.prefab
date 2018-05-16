@@ -9269,7 +9269,7 @@ MonoBehaviour:
   _DefaultIndex: 0
   _UseRandomizer: 0
   _NoteTexts:
-  - Project Name
+  - Emission
 --- !u!114 &114931849741126852
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -9426,7 +9426,7 @@ MonoBehaviour:
   _DefaultIndex: 0
   _UseRandomizer: 0
   _NoteTexts:
-  - Default Note
+  - Made with love
 --- !u!114 &114962298452534860
 MonoBehaviour:
   m_ObjectHideFlags: 1

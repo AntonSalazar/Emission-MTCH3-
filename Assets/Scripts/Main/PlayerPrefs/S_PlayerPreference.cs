@@ -19,7 +19,7 @@ public class S_PlayerPreference : MonoBehaviour
         get
         {
             if (_SoundVolume < 0.0f) _SoundVolume = PlayerPrefs.GetFloat("Sound", 1.0f);
-            return _SoundVolume;
+            return PlayerPrefs.GetFloat("Sound", 1.0f);
         }
     }
 
@@ -38,7 +38,7 @@ public class S_PlayerPreference : MonoBehaviour
         get
         {
             if (_MusicVolume < 0.0f) _MusicVolume = PlayerPrefs.GetFloat("Music", 1.0f);
-            return _MusicVolume;
+            return PlayerPrefs.GetFloat("Music", 1.0f);
         }
     }
 

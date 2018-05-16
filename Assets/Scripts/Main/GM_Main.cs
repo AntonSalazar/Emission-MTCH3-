@@ -19,7 +19,7 @@ public class GM_Main : S_IniterObject
             if (_GameState != value)
             {
                 _GameState = value;
-                _GameHandler(m_Dificule, _GameState);
+                _GameHandler(m_Dificult, _GameState);
                 Debug.Log("Game State set to: " + _GameState.ToString());
             }
         }
@@ -27,23 +27,23 @@ public class GM_Main : S_IniterObject
     }
     #endregion GameState
 
-    #region Dificule
-    internal enum Dificule
+    #region Dificult
+    internal enum Dificult
     {
         Easy,
         Medium,
         Hard
     }
-    static Dificule _Dificule;
-    internal static Dificule m_Dificule
+    static Dificult _Dificult;
+    internal static Dificult m_Dificult
     {
         set
         {
-            if (_Dificule != value) _Dificule = value;
+            if (_Dificult != value) _Dificult = value;
         }
-        get { return _Dificule; }
+        get { return _Dificult; }
     }
-    #endregion Dificule
+    #endregion Dificult
     #endregion Enums
 
     #region Events
@@ -67,8 +67,8 @@ public class GM_Main : S_IniterObject
         }
     }
 
-    internal delegate void GameHandler(Dificule _dificule, GameState _gameState);
-    static event GameHandler _GameHandler = (_dificule, _gameState) => { };
+    internal delegate void GameHandler(Dificult _dificult, GameState _gameState);
+    static event GameHandler _GameHandler = (_dificult, _gameState) => { };
     internal static event GameHandler m_GameHandler
     {
         add
