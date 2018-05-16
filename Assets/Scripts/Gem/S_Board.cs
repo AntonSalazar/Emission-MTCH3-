@@ -2,36 +2,22 @@
 using System.Collections.Generic;
 public class S_Board : MonoBehaviour
 {
+    #region External
+    [Header("Board Settings")]
     [SerializeField] Vector2Int _Board;
     [SerializeField] S_Gem _Gem;
     [SerializeField] AnimationCurve _GemMotion;
 
+    static S_Gem[,] _Gems;
     static Vector2Int _SBoard;
     internal static AnimationCurve _SGemMotion;
     static List<S_Gem> _CurrentGems = new List<S_Gem>();
-    static S_Gem[,] _Gems;
+    #endregion External
 
-    private void OnEnable()
-    {
-        GM_Main.m_GameHandler += StartGame;
-    }
+    #region MonoBehavior
 
-    private void OnDisable()
-    {
-        GM_Main.m_GameHandler -= StartGame;
-    }
-
-    private void StartGame(GM_Main.Dificult _dificule, GM_Main.GameState _state)
-    {
-        if (_state == GM_Main.GameState.Gameplay)
-        {
-            _SBoard = _Board;
-            _SGemMotion = _GemMotion;
-            Init();
-        }
-    }
-
-    private void Init()
+    #region BoardGeneration
+    private void BoardGeneration()
     {
         _Gems = new S_Gem[_Board.y, _Board.x];
         for (int i = 0; i < _Board.y; i++)
@@ -77,7 +63,9 @@ public class S_Board : MonoBehaviour
 
         return _New;
     }
+    #endregion BoardGeneration
 
+    #region SearchNeighbors
     internal static void SearchNeighbors(Vector2Int _sector)
     {
 
@@ -96,6 +84,27 @@ public class S_Board : MonoBehaviour
         if (_y > 0) _Gems[_x, _y].AddNeighbor(_Gems[_x, _y - 1]);
         if (_y < _SBoard.x - 1) _Gems[_x, _y].AddNeighbor(_Gems[_x, _y + 1]);
     }
+    #endregion SearchNeighbors
+
+    private void OnEnable()
+    {
+        GM_Main.m_GameHandler += StartGame;
+    }
+
+    private void OnDisable()
+    {
+        GM_Main.m_GameHandler -= StartGame;
+    }
+
+    private void StartGame(GM_Main.Dificult _dificule, GM_Main.GameState _state)
+    {
+        if (_state == GM_Main.GameState.Gameplay)
+        {
+            _SBoard = _Board;
+            _SGemMotion = _GemMotion;
+            BoardGeneration();
+        }
+    }
 
     internal static void ClickedGem(S_Gem _gem)
     {
@@ -113,8 +122,57 @@ public class S_Board : MonoBehaviour
 
                 _CurrentGems[0].Clicked(_CurrentGems[1].m_Transform.position);
                 _CurrentGems[1].Clicked(_CurrentGems[0].m_Transform.position);
-            } 
+            }
             _CurrentGems.Clear();
         }
     }
+
+    #region SearchCombination
+    internal static void SearchCombination(Vector2Int _sector)
+    {
+        SearchAlghoritm(_sector, true);
+        SearchAlghoritm(_sector, false);
+    }
+
+    static void SearchAlghoritm(Vector2Int _sector, bool _x)
+    {
+        int _start = -1, _end = -1, _count = 0;
+        for (int i = 0; i < ((_x) ? _SBoard.x : _SBoard.y); i++)
+        {
+            if (i < _SBoard.x - 1)
+            {
+                if (_Gems[
+                    (_x) ? i : _sector.x,
+                    (_x) ? _sector.y : i].m_Gem ==_Gems[
+                        (_x) ? i + 1 : _sector.x,
+                        (_x) ? _sector.y : i + 1].m_Gem)
+                {
+                    if (_start < 0) _start = i;
+                }
+                else if (_start >= 0)
+                {
+                    _end = i;
+                    _count = _end - (_start - 1);
+                    if (_count >= 3)
+                        if (_x) Debug.Log("Vertical: " + _start + "..." + _end + " in " + _sector.y);
+                        else Debug.Log("Horizontal: " + _start + "..." + _end + " in " + _sector.x);
+
+                    _start = _end = -1;
+                }
+            }
+            else if (_start >= 0)
+            {
+                _end = i;
+                _count = _end - (_start - 1);
+                if (_count >= 3)
+                    if (_x) Debug.Log("Vertical: " + _start + "..." + _end + " in " + _sector.y);
+                    else Debug.Log("Horizontal: " + _start + "..." + _end + " in " + _sector.x);
+
+                _start = _end = -1;
+            }
+        }
+    }
+    #endregion SearchCombination
+
+    #endregion MonoBehavior
 }

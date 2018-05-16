@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
-using System.Linq;
 using System.Collections.Generic;
 
 public class S_Gem : S_PoolObject
 {
+    #region External
     internal enum Gem
     {
         Red     = 0,
@@ -22,7 +22,7 @@ public class S_Gem : S_PoolObject
     bool _Clicked;
     Vector3 _PrevPosition, _NextPosition;
 
-    Gem _Gem;
+    [SerializeField, ReadOnly] Gem _Gem;
     internal Gem m_Gem
     {
         set
@@ -57,10 +57,13 @@ public class S_Gem : S_PoolObject
                 _Timer = 0.0f;
                 _Clicked = false;
                 _PrevPosition = _NextPosition;
+                S_Board.SearchCombination(_Sector);
             }
         }
         get { return _Timer; }
     }
+
+    #endregion External
 
     protected override void OnEnable()
     {
@@ -72,6 +75,23 @@ public class S_Gem : S_PoolObject
     {
         base.OnDisable();
         GM_Main.m_TickHandler -= Tick;
+    }
+
+    private void Start()
+    {
+        _PrevPosition = m_Transform.position;
+    }
+
+
+    private void Tick(GM_Main.GameState _gameState)
+    {
+        if (_gameState == GM_Main.GameState.Gameplay)
+        {
+            if (_Clicked)
+            {
+                m_Timer += Time.deltaTime * 2.5f;
+            }
+        }
     }
 
     private void OnMouseDown()
@@ -91,23 +111,6 @@ public class S_Gem : S_PoolObject
 
         _Clicked = true;
         _NextPosition = _position;
-    }
-
-    private void Start()
-    {
-        _PrevPosition = m_Transform.position;
-    }
-
-
-    private void Tick(GM_Main.GameState _gameState)
-    {
-        if (_gameState == GM_Main.GameState.Gameplay)
-        {
-            if (_Clicked)
-            {
-                m_Timer += Time.deltaTime * 2.5f;
-            }
-        }
     }
 
     internal void AddNeighbor(S_Gem _gem)
