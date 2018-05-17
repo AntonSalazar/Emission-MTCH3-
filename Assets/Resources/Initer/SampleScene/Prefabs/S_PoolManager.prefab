@@ -56,7 +56,7 @@ MonoBehaviour:
   - _Name: Gems
     _PoolSettings:
     - _Name: Gem
-      _PoolObject: {fileID: 114902706436544076, guid: 757307e895875f246bfce1f1dafbe5b4,
+      _PoolObject: {fileID: 114607740047982410, guid: 757307e895875f246bfce1f1dafbe5b4,
         type: 2}
       _Count: 15
       _OnScene: []

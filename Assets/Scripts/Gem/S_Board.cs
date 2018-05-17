@@ -1,90 +1,32 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+
 public class S_Board : MonoBehaviour
 {
-    #region External
     [Header("Board Settings")]
     [SerializeField] Vector2Int _Board;
-    [SerializeField] S_Gem _Gem;
-    [SerializeField] AnimationCurve _GemMotion;
+    [SerializeField] S_Gem _GemObject;
+    [SerializeField, Range(0, 5)] int _Dificult = 5;
 
-    static S_Gem[,] _Gems;
-    static Vector2Int _SBoard;
-    internal static AnimationCurve _SGemMotion;
-    static List<S_Gem> _CurrentGems = new List<S_Gem>();
-    #endregion External
-
-    #region MonoBehavior
-
-    #region BoardGeneration
-    private void BoardGeneration()
+    static int _sDificult;
+    static List<S_Gem> _ClickedGems = new List<S_Gem>();
+    static S_Gem[,] _GemsGrid;
+    internal static S_Gem[,] M_GemsGrid
     {
-        _Gems = new S_Gem[_Board.y, _Board.x];
-        for (int i = 0; i < _Board.y; i++)
-        {
-            for (int j = 0; j < _Board.x; j++)
-            {
-                S_Gem _gem = S_PoolManager.m_PoolManager.GetPoolObject(_Gem, new Vector3(j - (_Board.x / 2), i - (_Board.y / 2), transform.position.z), Quaternion.identity);
-                _gem.m_Gem = (S_Gem.Gem)Random.Range(0, 5);
-                _gem.transform.SetParent(transform);
-
-                _Gems[i, j] = _gem;
-                _gem._Sector = new Vector2Int(i, j);
-            }
-        }
-
-        for (int i = 0; i < _Board.y; i++)
-        {
-            for (int j = 0; j < _Board.x; j++)
-            {
-                SearchNeighbors(i, j);
-
-                if (i > 0 && i < _Board.y - 1)
-                {
-                    if (_Gems[i, j].m_Gem == _Gems[i - 1, j].m_Gem &&
-                        _Gems[i, j].m_Gem == _Gems[i + 1, j].m_Gem)
-                        _Gems[i, j].m_Gem = GenerateColor(_Gems[i, j].m_Gem);
-                }
-
-                if (j > 0 && j < _Board.x - 1)
-                {
-                    if (_Gems[i, j].m_Gem == _Gems[i, j - 1].m_Gem &&
-                        _Gems[i, j].m_Gem == _Gems[i, j + 1].m_Gem)
-                        _Gems[i, j].m_Gem = GenerateColor(_Gems[i, j].m_Gem);
-                }
-            }
-        }
+        private set { _GemsGrid = value; }
+        get { return _GemsGrid; }
+    }
+    static Vector2Int _sBoard;
+    internal static Vector2Int M_sBoard
+    {
+        private set { _sBoard = value; }
+        get { return _sBoard; }
     }
 
-    private S_Gem.Gem GenerateColor(S_Gem.Gem _current)
+    private void Awake()
     {
-        S_Gem.Gem _New = (S_Gem.Gem)Random.Range(0, 5);
-        if (_New == _current) return GenerateColor(_current);
-
-        return _New;
+        M_sBoard = _Board;
     }
-    #endregion BoardGeneration
-
-    #region SearchNeighbors
-    internal static void SearchNeighbors(Vector2Int _sector)
-    {
-
-        if (_sector.x > 0) _Gems[_sector.x, _sector.y].AddNeighbor(_Gems[_sector.x - 1, _sector.y]);
-        if (_sector.x < _SBoard.y - 1) _Gems[_sector.x, _sector.y].AddNeighbor(_Gems[_sector.x + 1, _sector.y]);
-
-        if (_sector.y > 0) _Gems[_sector.x, _sector.y].AddNeighbor(_Gems[_sector.x, _sector.y - 1]);
-        if (_sector.y < _SBoard.x - 1) _Gems[_sector.x, _sector.y].AddNeighbor(_Gems[_sector.x, _sector.y + 1]);
-    }
-
-    internal static void SearchNeighbors(int _x, int _y)
-    {
-        if (_x > 0) _Gems[_x, _y].AddNeighbor(_Gems[_x - 1, _y]);
-        if (_x < _SBoard.y - 1) _Gems[_x, _y].AddNeighbor(_Gems[_x + 1, _y]);
-
-        if (_y > 0) _Gems[_x, _y].AddNeighbor(_Gems[_x, _y - 1]);
-        if (_y < _SBoard.x - 1) _Gems[_x, _y].AddNeighbor(_Gems[_x, _y + 1]);
-    }
-    #endregion SearchNeighbors
 
     private void OnEnable()
     {
@@ -96,83 +38,99 @@ public class S_Board : MonoBehaviour
         GM_Main.m_GameHandler -= StartGame;
     }
 
-    private void StartGame(GM_Main.Dificult _dificule, GM_Main.GameState _state)
+    private void StartGame(GM_Main.Dificult _dificult, GM_Main.GameState _gameState)
     {
-        if (_state == GM_Main.GameState.Gameplay)
+        if (_gameState == GM_Main.GameState.Gameplay)
         {
-            _SBoard = _Board;
-            _SGemMotion = _GemMotion;
-            BoardGeneration();
+            _sDificult = _Dificult;
+            GenerateGrid();
+            GenerateColor();
         }
     }
 
-    internal static void ClickedGem(S_Gem _gem)
+    private void GenerateGrid()
     {
-        _CurrentGems.Add(_gem);
-        if (_CurrentGems.Count == 2)
+        M_GemsGrid = new S_Gem[M_sBoard.x, M_sBoard.y];
+
+        for (int i = 0; i < M_sBoard.x; i++)
         {
-            if (_CurrentGems[0]._Neighbors.Contains(_CurrentGems[1]))
+            for (int j = 0; j < M_sBoard.y; j++)
             {
-                Vector2Int _tmpSector = _CurrentGems[0]._Sector;
-                _CurrentGems[0]._Sector = _CurrentGems[1]._Sector;
-                _CurrentGems[1]._Sector = _tmpSector;
-
-                _Gems[_CurrentGems[0]._Sector.x, _CurrentGems[0]._Sector.y] = _CurrentGems[0];
-                _Gems[_CurrentGems[1]._Sector.x, _CurrentGems[1]._Sector.y] = _CurrentGems[1];
-
-                _CurrentGems[0].Clicked(_CurrentGems[1].m_Transform.position);
-                _CurrentGems[1].Clicked(_CurrentGems[0].m_Transform.position);
+                S_Gem _newGem = S_PoolManager.m_PoolManager.GetPoolObject(_GemObject, new Vector3(i - (M_sBoard.x / 2), j - (M_sBoard.y / 2), transform.position.z), Quaternion.identity);
+                _newGem.name = "Gem (" + i + " : " + j + ")";
+                _newGem.m_Transform.SetParent(transform);
+                _newGem.M_Sector = new Vector2Int(i, j);
+                _newGem.M_GemColor = (S_Gem.GemColor)Random.Range(0, _Dificult);
+                M_GemsGrid[i, j] = _newGem;
             }
-            _CurrentGems.Clear();
         }
     }
 
-    #region SearchCombination
-    internal static void SearchCombination(Vector2Int _sector)
+    private void GenerateColor()
     {
-        SearchAlghoritm(_sector, true);
-        SearchAlghoritm(_sector, false);
-    }
-
-    static void SearchAlghoritm(Vector2Int _sector, bool _x)
-    {
-        int _start = -1, _end = -1, _count = 0;
-        for (int i = 0; i < ((_x) ? _SBoard.x : _SBoard.y); i++)
+        for (int i = 0; i < M_sBoard.x; i++)
         {
-            if (i < _SBoard.x - 1)
+            for (int j = 0; j < M_sBoard.y; j++)
             {
-                if (_Gems[
-                    (_x) ? i : _sector.x,
-                    (_x) ? _sector.y : i].m_Gem ==_Gems[
-                        (_x) ? i + 1 : _sector.x,
-                        (_x) ? _sector.y : i + 1].m_Gem)
+                if (i > 0 && i < M_sBoard.x - 1)
                 {
-                    if (_start < 0) _start = i;
+                    if (M_GemsGrid[i, j].M_GemColor == M_GemsGrid[i - 1, j].M_GemColor &&
+                        M_GemsGrid[i, j].M_GemColor == M_GemsGrid[i + 1, j].M_GemColor)
+                        M_GemsGrid[i, j].M_GemColor = GenerateColor(M_GemsGrid[i, j].M_GemColor);
                 }
-                else if (_start >= 0)
-                {
-                    _end = i;
-                    _count = _end - (_start - 1);
-                    if (_count >= 3)
-                        if (_x) Debug.Log("Vertical: " + _start + "..." + _end + " in " + _sector.y);
-                        else Debug.Log("Horizontal: " + _start + "..." + _end + " in " + _sector.x);
 
-                    _start = _end = -1;
+                if (j > 0 && j < M_sBoard.y - 1)
+                {
+                    if (M_GemsGrid[i, j].M_GemColor == M_GemsGrid[i, j - 1].M_GemColor &&
+                        M_GemsGrid[i, j].M_GemColor == M_GemsGrid[i, j + 1].M_GemColor)
+                        M_GemsGrid[i, j].M_GemColor = GenerateColor(M_GemsGrid[i, j].M_GemColor);
                 }
             }
-            else if (_start >= 0)
-            {
-                _end = i;
-                _count = _end - (_start - 1);
-                if (_count >= 3)
-                    if (_x) Debug.Log("Vertical: " + _start + "..." + _end + " in " + _sector.y);
-                    else Debug.Log("Horizontal: " + _start + "..." + _end + " in " + _sector.x);
-
-                _start = _end = -1;
-            }
         }
     }
-    #endregion SearchCombination
 
-    #endregion MonoBehavior
+    private static S_Gem.GemColor GenerateColor(S_Gem.GemColor _current)
+    {
+        S_Gem.GemColor _New = (S_Gem.GemColor)Random.Range(0, _sDificult);
+        if (_New == _current) return GenerateColor(_current);
+
+        return _New;
+    }
+
+    internal static void Clicked(S_Gem _gem)
+    {
+        _ClickedGems.Add(_gem);
+        if (_ClickedGems.Count == 2)
+        {
+            Vector2Int _Result = _ClickedGems[0].M_Sector - _ClickedGems[1].M_Sector;
+
+            if (_Result.x == -1) _ClickedGems[0].SetSector(true, 1);        // right
+            else if (_Result.x == 1) _ClickedGems[0].SetSector(true, -1);   // left
+            else if (_Result.y == -1) _ClickedGems[0].SetSector(false, 1);  // up
+            else if (_Result.y == 1) _ClickedGems[0].SetSector(false, -1);  // down
+            _ClickedGems.Clear();
+        }
+    }
+
+    internal static void FindEmpty()
+    {
+        List<S_Gem> _Empty = new List<S_Gem>();
+        for (int i = 0; i < M_sBoard.x; i++)
+        {
+            for (int j = 0; j < M_sBoard.y; j++)
+            {
+                if (!M_GemsGrid[i, j].m_isActive && !_Empty.Contains(M_GemsGrid[i, j])) _Empty.Add(M_GemsGrid[i, j]);
+                if (!M_GemsGrid[i, j].m_isActive && j < M_sBoard.y - 1)
+                {
+                    M_GemsGrid[i, j].M_GemColor = GenerateColor(M_GemsGrid[i, j].M_GemColor);
+                    M_GemsGrid[i, j].SetSector(false, 1);
+                }
+            }
+        }
+
+        for (int i = 0; i < _Empty.Count;i++)
+        {
+            _Empty[i].m_isActive = true;
+        }
+    }
 }

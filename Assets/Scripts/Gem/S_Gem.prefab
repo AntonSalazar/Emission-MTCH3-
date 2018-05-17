@@ -36,8 +36,8 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4043421766667422}
-  - component: {fileID: 114902706436544076}
-  - component: {fileID: 65290243532084706}
+  - component: {fileID: 114607740047982410}
+  - component: {fileID: 61723422094816254}
   m_Layer: 8
   m_Name: S_Gem
   m_TagString: Untagged
@@ -52,7 +52,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1485436354220854}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.8448539, y: 5.2938604, z: 2.112598}
+  m_LocalPosition: {x: 2.8343573, y: -0.18496089, z: -5.2768555}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4910953694733924}
@@ -114,19 +114,32 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1295398553198476}
   m_Mesh: {fileID: 4300002, guid: 4e52ed5300e2ac14abc26afd773cb7e9, type: 3}
---- !u!65 &65290243532084706
-BoxCollider:
+--- !u!61 &61723422094816254
+BoxCollider2D:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1485436354220854}
+  m_Enabled: 1
+  m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: -0.1}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 0.6, z: 1}
-  m_Center: {x: 0, y: -0.1, z: 0}
---- !u!114 &114902706436544076
+  m_Size: {x: 1, y: 0.65}
+  m_EdgeRadius: 0
+--- !u!114 &114607740047982410
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -139,10 +152,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _UseLifeTime: 0
   _LifeTime: 5
+  _GemColor: 0
+  _isMatched: 0
+  _isClicked: 0
+  _Sector: {x: 0, y: 0}
   _Materials:
   - {fileID: 2100000, guid: 9ec39c0177ac0d74aa1a42af644d26d1, type: 2}
   - {fileID: 2100000, guid: 729b89c658c74af4db305d21d5f36e55, type: 2}
   - {fileID: 2100000, guid: fccddcb0a7a79a44699468bce860156e, type: 2}
   - {fileID: 2100000, guid: 4c1ab90fff5af854e965885cd9610df6, type: 2}
   - {fileID: 2100000, guid: 1d5ec1330567c4f47aa41e733509c260, type: 2}
-  _Neighbors: []
+  _CurveMotion:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _OldSector: {x: 0, y: 0}
